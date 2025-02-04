@@ -1,118 +1,50 @@
-import { useState } from "react";
-import { Box, Typography, IconButton, Tooltip, TextField, Button } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BarcodeScannerComponent from "react-qr-barcode-scanner"; // Importa el escáner
+import React, { useState, useCallback } from 'react';
+import Scanner from './components/Scanner';
 
-const FindCodebar = () => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [scanning, setScanning] = useState(false);
-    const [product, setProduct] = useState<any | null>(null);
-    const [error, setError] = useState("");
+const FindCodebar: React.FC = () => {
+    const [code, setCode] = useState<string | null>(null);
+    const [isProductFound, setIsProductFound] = useState<boolean | null>(null); // Estado para verificar si el producto está en la base de datos
 
-    // Simulación de base de datos de productos
-    const productDatabase = [
-        { name: "Coca Cola", description: "Bebida gaseosa", price: 1.5, stock: 50, code: "123456" },
-        { name: "Pepsi", description: "Bebida cola", price: 1.4, stock: 40, code: "789012" },
-        { name: "Sprite", description: "Bebida lima-limón", price: 1.3, stock: 30, code: "345678" },
-    ];
-
-    // Simula la búsqueda de un producto por código
-    const findProductByCode = (code: string) => {
-        const foundProduct = productDatabase.find((p) => p.code === code);
-        if (foundProduct) {
-            setProduct(foundProduct);
-            setError("");
-        } else {
-            setProduct(null);
-            setError("Producto no encontrado.");
+    // Función para manejar la detección del código de barras
+    const handleDetected = useCallback(async (detectedCode: string) => {
+        if (detectedCode !== code) {
+            setCode(detectedCode);
+            // Realizar la búsqueda del código en la base de datos
+            try {
+                const response = await fetch(`/api/products/${detectedCode}`);
+                if (response.ok) {
+                    const product = await response.json();
+                    // Si el producto existe en la base de datos
+                    setIsProductFound(true);
+                } else {
+                    // Si el producto no existe
+                    setIsProductFound(false);
+                }
+            } catch (error) {
+                console.error('Error al buscar el código:', error);
+                setIsProductFound(false); // Asumir que no se encontró el producto si hay error
+            }
         }
-    };
+    }, [code]);
 
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                m: 2,
-            }}
-        >
-            <Button variant="contained" onClick={() => setScanning(!scanning)}>
-                {scanning ? "Cerrar Cámara" : "Abrir Cámara"}
-            </Button>
-
-            {scanning && (
-                <Box
-                    sx={{
-                        width: "100%",
-                        maxWidth: "500px",
-                        height: "300px",
-                        overflow: "hidden",
-                        mt: 2,
-                        borderRadius: "8px",
-                    }}
-                >
-                    <BarcodeScannerComponent
-                        width="100%"
-                        height="300px"
-                        onUpdate={(_err, result:any) => {
-                            if (result) {
-                                findProductByCode(result.text);
-                                setScanning(false);
-                            }
-                        }}
-                    />
-                </Box>
+        <div style={{ padding: '20px' }}>
+            <h1>Escáner de Códigos de Barra</h1>
+            <Scanner onDetected={handleDetected} />
+            {code && (
+                <div>
+                    <h2>Código Detectado:</h2>
+                    <p>{code}</p>
+                </div>
             )}
-
-            <Typography variant="h5" gutterBottom>
-                Escáner de Código de Barras
-            </Typography>
-
-            {product ? (
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        border: "1px solid gray",
-                        borderRadius: "8px",
-                        padding: 2,
-                        m: 2,
-                        width: "100%",
-                        maxWidth: "800px",
-                    }}
-                >
-                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
-                        <Typography variant="h6">{product.name}</Typography>
-                        <Typography variant="body2" color="textSecondary">{product.description}</Typography>
-                        <Typography variant="body1" sx={{ fontWeight: "bold" }}>${product.price}</Typography>
-                        <Typography variant="body2">Stock disponible: {product.stock} unidades</Typography>
-                        <Typography variant="body2">Código del producto: {product.code}</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, ml: 2 }}>
-                        <Tooltip title="Editar producto">
-                            <IconButton color="primary">
-                                <EditIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Eliminar producto">
-                            <IconButton color="secondary">
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                </Box>
-            ) : error ? (
-                <Typography color="error">{error}</Typography>
-            ) : (
-                <Typography variant="body1">Escanea un código para ver el producto</Typography>
+            {isProductFound === false && (
+                <div>
+                    <button onClick={() => console.log('Agregar nuevo producto')}>
+                        Agregar como nuevo producto al stock
+                    </button>
+                </div>
             )}
-        </Box>
+        </div>
     );
 };
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -15,7 +14,7 @@ const FindStock = () => {
 
     return (
         <>
-      
+
             {/* Barra de búsqueda centrada */}
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
                 <Tabs
