@@ -13,7 +13,6 @@ const FindCodebar: React.FC = () => {
             try {
                 const response = await fetch(`/api/products/${detectedCode}`);
                 if (response.ok) {
-                    const product = await response.json();
                     // Si el producto existe en la base de datos
                     setIsProductFound(true);
                 } else {

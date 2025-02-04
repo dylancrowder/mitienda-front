@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Box, AppBar, Tabs, Tab, Typography } from "@mui/material";
 
@@ -38,7 +38,7 @@ export const VentasContent = () => {
   const theme = useTheme();
   const [value, setValue] = useState(0);
 
-  const handleTabChange = (event: unknown, newValue: number) => {
+  const handleTabChange = (_event: unknown, newValue: number) => {
     setValue(newValue);
   };
 
@@ -56,7 +56,7 @@ export const VentasContent = () => {
           variant="fullWidth"
           aria-label="Ventas y Stock"
         >
-          <Tab label="Vender"  {...a11yProps(0)}  />
+          <Tab label="Vender"  {...a11yProps(0)} />
           <Tab label="Vernder con Stock" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
