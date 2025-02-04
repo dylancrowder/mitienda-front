@@ -47,7 +47,7 @@ export const Stock = () => {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
 
-    const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleMainTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
