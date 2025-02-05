@@ -19,7 +19,7 @@ const Scanner: React.FC<BarcodeScannerProps> = ({ onDetected }) => {
                 scannerId,
                 {
                     fps: 10,  // Reducir FPS a 30 para mejorar rendimiento
-                    qrbox: { width: 300, height: 300 },  // Reducir el tamaño del área de escaneo
+                    qrbox: { width: 200, height: 200 },  // Reducir el tamaño del área de escaneo
                 },
                 false
             );
@@ -44,6 +44,8 @@ const Scanner: React.FC<BarcodeScannerProps> = ({ onDetected }) => {
     }, [onDetected]);
 
     return <div ref={scannerRef} >
+
+
     </div>;
 };
 
